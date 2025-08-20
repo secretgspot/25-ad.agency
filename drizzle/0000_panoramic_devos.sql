@@ -9,7 +9,5 @@ CREATE TABLE `ads` (
 	`weight` real DEFAULT 1 NOT NULL,
 	`impressions` integer DEFAULT 0 NOT NULL,
 	`clicks` integer DEFAULT 0 NOT NULL,
-	`active` integer DEFAULT true NOT NULL,
-	`image_data` blob,
-	`file_type` text
+	`active` integer DEFAULT true NOT NULL
 );

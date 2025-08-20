@@ -12,6 +12,4 @@ export const ads = sqliteTable('ads', {
   impressions: integer('impressions').notNull().default(0),
   clicks: integer('clicks').notNull().default(0),
   active: integer('active', { mode: 'boolean' }).notNull().default(true),
-  imageData: blob('image_data', { mode: 'buffer' }),
-  fileType: text('file_type'),
 });

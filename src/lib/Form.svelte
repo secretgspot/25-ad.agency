@@ -1,6 +1,5 @@
 <script>
 	import { invalidateAll } from '$app/navigation';
-	import { enhance } from '$app/forms';
 	import { Button, Toggle } from '$lib/buttons';
 	import { compressFile } from '$lib/utils/file.js';
 	import { addToast } from '$lib/toasts';
@@ -103,55 +102,67 @@
 			onDeleteConfirm?.(selectedAd);
 		}
 	}
-</script>
 
-<form
-	class="ad-form"
-	method="POST"
-	action={selectedAd ? '?/updateAd' : '?/createAd'}
-	enctype="multipart/form-data"
-	use:enhance={({ formData: enhanceFormData, cancel }) => {
+	async function handleSubmit(event) {
+		event.preventDefault();
 		loading = true;
 
-		// Append compressed file if available
-		if (compressedFile) {
-			enhanceFormData.append('image_file', compressedFile);
-		}
+		const body = {
+			title: formData.title,
+			href: formData.href,
+			width: formData.width,
+			height: formData.height,
+			weight: formData.weight,
+			active: formData.active,
+			id: selectedAd?.id
+		};
 
-		return async ({ result, update }) => {
-			loading = false;
-
-			if (result.type === 'success') {
-				addToast({
-					message: result.data?.message || 'Ad saved successfully!',
-					type: 'success',
-					timeout: 1200,
+		const sendRequest = async (body) => {
+			try {
+				const response = await fetch(selectedAd ? `/ads/${selectedAd.id}` : '/ads', {
+					method: selectedAd ? 'PATCH' : 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
 				});
-				if (!selectedAd) {
-					// For new ads, trigger form reset
-					onClearSelection?.();
-				} else {
-					// For updates, clear selection
+
+				const result = await response.json();
+
+				if (response.ok) {
+					addToast({ message: 'Ad saved successfully!', type: 'success', timeout: 1200 });
 					handleClearSelection();
+					await invalidateAll();
+				} else {
+					addToast({ message: result.message || 'Failed to save ad.', type: 'error' });
 				}
-				await invalidateAll();
-			} else if (result.type === 'failure') {
-				addToast({
-					message: result.data?.message || 'Failed to save ad.',
-					type: 'error',
-					dismissible: true,
-					timeout: 0,
-				});
-			} else if (result.type === 'error') {
-				addToast({
-					message: 'An unexpected error occurred.',
-					type: 'error',
-					dismissible: true,
-					timeout: 0,
-				});
+			} catch (err) {
+				console.error('Error submitting form:', err);
+				addToast({ message: 'An unexpected error occurred.', type: 'error' });
+			} finally {
+				loading = false;
 			}
 		};
-	}}>
+
+		// Handle file conversion to base64
+		if (compressedFile) {
+			const reader = new FileReader();
+			reader.readAsDataURL(compressedFile);
+			reader.onload = async () => {
+				body.file = reader.result;
+				await sendRequest(body);
+			};
+			reader.onerror = (error) => {
+				console.error('FileReader error:', error);
+				addToast({ message: 'Failed to read file.', type: 'error' });
+				loading = false;
+			};
+		} else {
+			body.file = selectedAd?.file; // Preserve existing file if not changed
+			await sendRequest(body);
+		}
+	}
+</script>
+
+<form class="ad-form" onsubmit={handleSubmit}>
 	<input type="hidden" name="id" value={formData.id} />
 
 	<div class="form-group">

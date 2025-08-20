@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ffc33af1-e793-43bd-be4e-e9d1b84f2992",
+  "id": "9522ee52-a2e8-4abe-8cca-6ba3e245c657",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "ads": {
@@ -87,20 +87,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": true
-        },
-        "image_data": {
-          "name": "image_data",
-          "type": "blob",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "file_type": {
-          "name": "file_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
