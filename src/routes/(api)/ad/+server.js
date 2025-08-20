@@ -39,7 +39,9 @@ export async function GET({ request }) {
 			}
 		}
 
-				const activeAds = await query;
+				console.log(query.toSQL());
+		const activeAds = await query;
+		console.log('Active Ads:', activeAds);
 
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
