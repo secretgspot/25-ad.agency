@@ -43,10 +43,10 @@ export async function GET({ request }) {
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
 		if (!selectedAd) {
-			return json({ message: 'No ad available' }, { status: 404 });
+			return json({ message: 'No ad available' }, { status: 404, headers: { 'Access-Control-Allow-Origin': '*' } });
 		}
 
-		return json(selectedAd, { status: 200 });
+		return json(selectedAd, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
 	} catch (err) {
 		console.error('Unexpected error fetching ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });

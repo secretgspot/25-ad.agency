@@ -19,6 +19,6 @@ export async function POST({ params }) {
 		return json({ message: 'Impression counted' }, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error processing impression:', err);
-		return json({ message: 'An unexpected error occurred' }, { status: 500 });
+		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
 	}
 }

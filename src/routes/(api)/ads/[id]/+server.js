@@ -13,7 +13,7 @@ export async function GET({ params }) {
 			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		return json(ad, { status: 200 });
+		return json(ad, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
 	} catch (err) {
 		console.error('Unexpected error fetching ad by ID:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
@@ -50,7 +50,7 @@ export async function DELETE({ params }) {
 			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		return json({ message: `Ad with id ${id} deleted successfully` }, { status: 200 });
+				return json({ message: `Ad with id ${id} deleted successfully` }, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
 	} catch (err) {
 		console.error('Unexpected error deleting ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
