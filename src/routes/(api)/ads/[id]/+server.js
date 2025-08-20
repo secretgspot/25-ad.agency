@@ -1,79 +1,73 @@
 import { json } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { ads } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 
-// GET a specific ad by ID
 export async function GET({ params }) {
 	const { id } = params;
 
 	try {
-		let error = false; // temp variable for mock data
-		const mock_data = {
-			"id": "58b6bef1-cbeb-4953-a2ad-d4a25c66ebd1",
-			"created_at": "2025-08-16T23:00:12.266985-06:00",
-			"user_id": "59427676-0fc2-4cdf-ba09-b0b6d739bcf2",
-			"file": "https://dpxkejzgkybacaujpytu.supabase.co/storage/v1/object/public/uploads/ads/59427676-0fc2-4cdf-ba09-b0b6d739bcf2_1755406829250.webp",
-			"title": "Cariari Community",
-			"href": "https://25-cariari-community.vercel.app",
-			"width": 320,
-			"height": 100,
-			"weight": 1,
-			"impressions": 414,
-			"clicks": 1,
-			"active": true
-		};
+		const ad = await db.select().from(ads).where(eq(ads.id, id)).get();
 
-		if (error) {
-			console.error('Error fetching ad:', error);
-			return json({ message: 'Failed to fetch ad' }, { status: 500 });
+		if (!ad) {
+			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		if (!mock_data) {
-			return json({ message: 'Ad not found' }, { status: 404 });
+		// Convert imageData buffer to base64 string for JSON serialization
+		if (ad.imageData) {
+			ad.imageData = ad.imageData.toString('base64');
 		}
 
-		return json(mock_data, { status: 200 });
+		return json(ad, { status: 200 });
 	} catch (err) {
-		console.error('Unexpected error fetching ad:', err);
+		console.error('Unexpected error fetching ad by ID:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
 	}
 }
 
-// PATCH (update) an ad
-export async function PATCH({ request, params }) {
+export async function PATCH({ params, request }) {
 	const { id } = params;
+	const { title, href, width, height, active, weight, imageData, fileType } = await request.json();
+
+	const updateData = { title, href, width, height, active, weight };
+
+	if (imageData && fileType) {
+		// Convert base64 to buffer
+		const buffer = Buffer.from(imageData, 'base64');
+		updateData.imageData = buffer;
+		updateData.fileType = fileType;
+	}
 
 	try {
-		let data = {}; // temp variable for mock data
-		let error = false; // temp variable for mock data
-		const body = await request.json();
+		const updatedAd = await db.update(ads).set(updateData).where(eq(ads.id, id)).returning().get();
 
-		// Insert data into SQLlite db
-
-		if (error) {
-			console.error('Error updating ad:', error);
-			return json({ message: 'Failed to update ad' }, { status: 500 });
+		if (!updatedAd) {
+			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		return json(data, { status: 200 });
+		// Convert imageData buffer to base64 string for JSON serialization
+		if (updatedAd.imageData) {
+			updatedAd.imageData = updatedAd.imageData.toString('base64');
+		}
+
+		return json(updatedAd, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error updating ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
 	}
 }
 
-// DELETE an ad
 export async function DELETE({ params }) {
 	const { id } = params;
 
 	try {
-		let error = false; // temp variable for mock data
-		// Delete ad from SQLlite db
+		const result = await db.delete(ads).where(eq(ads.id, id)).run();
 
-		if (error) {
-			console.error('Error deleting ad:', error);
-			return json({ message: 'Failed to delete ad' }, { status: 500 });
+		if (result.changes === 0) {
+			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		return json({ message: 'Ad deleted successfully' }, { status: 200 });
+		return json({ message: `Ad with id ${id} deleted successfully` }, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error deleting ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });

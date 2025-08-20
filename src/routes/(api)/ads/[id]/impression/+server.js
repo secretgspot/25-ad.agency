@@ -1,20 +1,24 @@
 import { json } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { ads } from '$lib/server/db/schema';
+import { eq, sql } from 'drizzle-orm';
 
-export async function POST({ params, locals: { supabase } }) {
-    const { id } = params;
+export async function POST({ params }) {
+	const { id } = params;
 
-    try {
-        const { error } = await supabase
-            .rpc('increment_ad_impressions', { ad_id: id });
+	try {
+		const result = await db.update(ads)
+			.set({ impressions: sql`${ads.impressions} + 1` })
+			.where(eq(ads.id, id))
+			.run();
 
-        if (error) {
-            console.error('Supabase error incrementing ad impression:', error);
-            return json({ message: 'Failed to increment ad impression', details: error.message }, { status: 500 });
-        }
+		if (result.changes === 0) {
+			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
+		}
 
-        return json({ message: 'Ad impression incremented successfully' }, { status: 200 });
-    } catch (err) {
-        console.error('Unexpected error incrementing ad impression:', err);
-        return json({ message: 'An unexpected error occurred' }, { status: 500 });
-    }
+		return json({ message: 'Impression counted' }, { status: 200 });
+	} catch (err) {
+		console.error('Unexpected error processing impression:', err);
+		return json({ message: 'An unexpected error occurred' }, { status: 500 });
+	}
 }

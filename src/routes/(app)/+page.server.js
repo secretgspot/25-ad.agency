@@ -22,34 +22,29 @@ export async function load({ fetch }) {
 
 export const actions = {
 	createAd: async ({ request, fetch }) => {
-
 		try {
 			const formData = await request.formData();
 			const imageFile = formData.get('image_file');
-			let imageUrl = null;
 
-			if (imageFile && imageFile.size > 0) {
-				const fileExtension = imageFile.name.split('.').pop();
-				const fileName = `${user.id}_${Date.now()}.${fileExtension}`;
-				const filePath = `ads/${fileName}`;
+			let imageData = null;
+			let fileType = null;
 
-				const { error: uploadError } = await supabase.storage.from('uploads').upload(filePath, imageFile);
-				if (uploadError) {
-					return fail(500, { message: 'Failed to upload image: ' + uploadError.message });
-				}
-
-				const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(filePath);
-				imageUrl = publicUrlData.publicUrl;
+			if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+				const arrayBuffer = await imageFile.arrayBuffer();
+				imageData = Buffer.from(arrayBuffer).toString('base64');
+				fileType = imageFile.type;
+				console.log('Base64 image data size (createAd):', imageData.length, 'bytes');
 			}
 
 			const body = {
 				title: formData.get('title'),
 				href: formData.get('href'),
-				width: formData.get('width'),
-				height: formData.get('height'),
-				weight: formData.get('weight'),
+				width: parseInt(formData.get('width')),
+				height: parseInt(formData.get('height')),
+				weight: parseFloat(formData.get('weight')),
 				active: formData.get('active') === 'true',
-				file: imageUrl
+				imageData,
+				fileType
 			};
 
 			const response = await fetch('/ads', {
@@ -65,12 +60,12 @@ export const actions = {
 
 			return { success: true, message: 'Ad created successfully!' };
 		} catch (error) {
+			console.error('Error in createAd action:', error);
 			return fail(500, { message: 'An unexpected error occurred.' });
 		}
 	},
 
 	updateAd: async ({ request, fetch }) => {
-
 		try {
 			const formData = await request.formData();
 			const id = formData.get('id');
@@ -80,40 +75,25 @@ export const actions = {
 				return fail(400, { message: 'Ad ID not provided' });
 			}
 
-			const { data: currentAd, error: fetchError } = await supabase.from('ads').select('file').eq('id', id).single();
-			if (fetchError) {
-				return fail(500, { message: 'Could not fetch existing ad data.' });
-			}
+			let imageData = null;
+			let fileType = null;
 
-			let imageUrl = currentAd.file;
-
-			if (imageFile && imageFile.size > 0) {
-				if (currentAd && currentAd.file) {
-					const oldPath = currentAd.file.substring(currentAd.file.lastIndexOf('/') + 1);
-					await supabase.storage.from('uploads').remove([`ads/${oldPath}`]);
-				}
-
-				const fileExtension = imageFile.name.split('.').pop();
-				const fileName = `${user.id}_${Date.now()}.${fileExtension}`;
-				const filePath = `ads/${fileName}`;
-				const { error: uploadError } = await supabase.storage.from('uploads').upload(filePath, imageFile);
-
-				if (uploadError) {
-					return fail(500, { message: 'Failed to upload new image: ' + uploadError.message });
-				}
-
-				const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(filePath);
-				imageUrl = publicUrlData.publicUrl;
+			if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+				const arrayBuffer = await imageFile.arrayBuffer();
+				imageData = Buffer.from(arrayBuffer).toString('base64');
+				fileType = imageFile.type;
+				console.log('Base64 image data size (updateAd):', imageData.length, 'bytes');
 			}
 
 			const body = {
 				title: formData.get('title'),
 				href: formData.get('href'),
-				width: formData.get('width'),
-				height: formData.get('height'),
-				weight: formData.get('weight'),
+				width: parseInt(formData.get('width')),
+				height: parseInt(formData.get('height')),
+				weight: parseFloat(formData.get('weight')),
 				active: formData.get('active') === 'true',
-				file: imageUrl
+				imageData,
+				fileType
 			};
 
 			const response = await fetch(`/ads/${id}`, {
@@ -129,6 +109,7 @@ export const actions = {
 
 			return { success: true, message: 'Ad updated successfully!' };
 		} catch (error) {
+			console.error('Error in updateAd action:', error);
 			return fail(500, { message: 'An unexpected error occurred.' });
 		}
 	},
@@ -143,16 +124,6 @@ export const actions = {
 				return fail(400, { message: 'Ad ID is required' });
 			}
 
-			const { data: currentAd, error: fetchError } = await supabase.from('ads').select('file').eq('id', id).single();
-			if (fetchError) {
-				return fail(500, { message: 'Could not fetch existing ad to delete image.' });
-			}
-
-			if (currentAd && currentAd.file) {
-				const oldPath = currentAd.file.substring(currentAd.file.lastIndexOf('/') + 1);
-				await supabase.storage.from('uploads').remove([`ads/${oldPath}`]);
-			}
-
 			const response = await fetch(`/ads/${id}`, {
 				method: 'DELETE'
 			});
@@ -164,6 +135,7 @@ export const actions = {
 
 			return { success: true, message: 'Ad deleted successfully!' };
 		} catch (error) {
+			console.error('Error in deleteAd action:', error);
 			return fail(500, { message: 'An unexpected error occurred.' });
 		}
 	}

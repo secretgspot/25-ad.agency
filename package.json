@@ -33,9 +33,9 @@
 	},
 	"dependencies": {
 		"better-sqlite3": "^11.8.0",
+		"compressorjs": "^1.2.1",
 		"drizzle-orm": "^0.40.0",
 		"open-props": "^1.7.16",
-		"compressorjs": "^1.2.1",
 		"uuid": "^11.1.0"
 	}
 }

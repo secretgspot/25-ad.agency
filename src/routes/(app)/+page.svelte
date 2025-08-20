@@ -55,10 +55,13 @@
 			return;
 		}
 
+		console.log('Original file size:', file.size, 'bytes');
+
 		try {
 			const { file: compressed, previewUrl: url } = await compressFile(file);
 			compressedFile = compressed;
 			previewUrl = url;
+			console.log('Compressed file size:', compressedFile.size, 'bytes');
 		} catch (err) {
 			addToast({
 				message: 'Image compression failed.',

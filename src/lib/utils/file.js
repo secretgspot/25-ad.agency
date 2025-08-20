@@ -8,7 +8,7 @@ import Compressor from 'compressorjs';
 export function compressFile(file) {
 	return new Promise((resolve, reject) => {
 		new Compressor(file, {
-			quality: 0.7,
+			quality: 0.6,
 			maxWidth: 800,
 			maxHeight: 600,
 			mimeType: 'image/jpeg',

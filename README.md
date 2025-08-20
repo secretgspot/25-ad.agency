@@ -27,7 +27,7 @@ Simple Ad management system for use on local sites that are part of the same net
 ## Tech Stack
 
 - Sveltekit
-- SQLlite
+- SQLite
 - Drizzle
 - OpenProps
 
