@@ -75,13 +75,13 @@
 			return;
 		}
 
-		console.log('Original file size:', file.size, 'bytes');
+		// console.log('Original file size:', file.size, 'bytes');
 
 		try {
 			const { file: compressed, previewUrl: url } = await compressFile(file);
 			compressedFile = compressed;
 			previewUrl = url;
-			console.log('Compressed file size:', compressedFile.size, 'bytes');
+			// console.log('Compressed file size:', compressedFile.size, 'bytes');
 		} catch (err) {
 			addToast({
 				message: 'Image compression failed.',
@@ -122,7 +122,7 @@
 			active: formData.active,
 			impressions: formData.impressions,
 			clicks: formData.clicks,
-			id: selectedAd?.id
+			id: selectedAd?.id,
 		};
 
 		const sendRequest = async (body) => {
@@ -130,7 +130,7 @@
 				const response = await fetch(selectedAd ? `/ads/${selectedAd.id}` : '/ads', {
 					method: selectedAd ? 'PATCH' : 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				const result = await response.json();

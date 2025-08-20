@@ -122,6 +122,14 @@
 		margin-bottom: var(--size-9);
 		margin-inline: var(--size-1);
 
+		:global(.text-divider) {
+			z-index: 1;
+			position: sticky;
+			top: 0;
+			background: var(--surface-1);
+			padding-block: var(--size-3);
+		}
+
 		:global(button.ad-card) {
 			border: var(--border-size-1) solid var(--surface-3);
 			border-radius: var(--radius-2);
