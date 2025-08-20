@@ -40,9 +40,7 @@ export async function GET({ request }) {
 
 		const query = db.select().from(ads).where(and(...whereConditions)); // Apply all conditions
 
-		console.log(query.toSQL());
 		const activeAds = await query;
-		console.log('Active Ads:', activeAds);
 
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
