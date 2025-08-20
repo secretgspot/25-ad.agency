@@ -46,7 +46,12 @@ export async function GET({ request }) {
 			return json({ message: 'No ad available' }, { status: 404 });
 		}
 
-		return json(selectedAd, { status: 200 });
+		// Construct the file data URL for the selected ad
+		const fileDataUrl = selectedAd.imageData ? `data:${selectedAd.fileType};base64,${selectedAd.imageData.toString('base64')}` : '/placeholder/300x100.svg';
+
+		// Return a new object with the file property as data URL, and omit imageData/fileType
+		const { imageData, fileType, ...rest } = selectedAd;
+		return json({ ...rest, file: fileDataUrl }, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error fetching ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });

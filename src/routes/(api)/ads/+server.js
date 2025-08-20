@@ -6,10 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 export async function GET() {
 	try {
 		const allAds = await db.select().from(ads);
-		const adsWithImageData = allAds.map(ad => ({
-			...ad,
-			file: ad.imageData ? `data:${ad.fileType};base64,${ad.imageData.toString('base64')}` : '/placeholder.png'
-		}));
+		const adsWithImageData = allAds.map(ad => {
+			const { imageData, fileType, ...rest } = ad;
+			return {
+				...rest,
+				file: imageData ? `data:${fileType};base64,${imageData.toString('base64')}` : '/placeholder/300x100.svg'
+			};
+		});
 		return json(adsWithImageData, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error fetching ads:', err);
@@ -38,10 +41,10 @@ export async function POST({ request }) {
 		if (imageData && fileType) {
 			newAd.imageData = Buffer.from(imageData, 'base64');
 			newAd.fileType = fileType;
-			newAd.file = imageData ? `data:${fileType};base64,${imageData}` : '/placeholder.png';
+			newAd.file = imageData ? `data:${fileType};base64,${imageData}` : '/placeholder/300x100.svg';
 		} else {
 			// Handle case where no image is provided, maybe a placeholder or error
-			newAd.file = '/placeholder.png'; // Or throw an error if image is mandatory
+			newAd.file = '/placeholder/300x100.svg'; // Or throw an error if image is mandatory
 		}
 
 		const result = await db.insert(ads).values(newAd).returning().get();

@@ -13,12 +13,12 @@ export async function GET({ params }) {
 			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		// Convert imageData buffer to base64 string for JSON serialization
-		if (ad.imageData) {
-			ad.imageData = ad.imageData.toString('base64');
-		}
+		// Construct the file data URL
+		const fileDataUrl = ad.imageData ? `data:${ad.fileType};base64,${ad.imageData.toString('base64')}` : '/placeholder/300x100.svg';
 
-		return json(ad, { status: 200 });
+		// Return a new object with the file property as data URL, and omit imageData/fileType
+		const { imageData, fileType, ...rest } = ad;
+		return json({ ...rest, file: fileDataUrl }, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error fetching ad by ID:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
@@ -36,6 +36,8 @@ export async function PATCH({ params, request }) {
 		const buffer = Buffer.from(imageData, 'base64');
 		updateData.imageData = buffer;
 		updateData.fileType = fileType;
+		// Update the 'file' field to reflect the data URL
+		updateData.file = `data:${fileType};base64,${imageData}`;
 	}
 
 	try {
@@ -45,12 +47,10 @@ export async function PATCH({ params, request }) {
 			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		// Convert imageData buffer to base64 string for JSON serialization
-		if (updatedAd.imageData) {
-			updatedAd.imageData = updatedAd.imageData.toString('base64');
-		}
-
-		return json(updatedAd, { status: 200 });
+		// Construct the file data URL for the returned object
+		const updatedFileDataUrl = updatedAd.imageData ? `data:${updatedAd.fileType};base64,${updatedAd.imageData.toString('base64')}` : '/placeholder/300x100.svg';
+		const { imageData: updatedImageData, fileType: updatedFileType, ...updatedRest } = updatedAd;
+		return json({ ...updatedRest, file: updatedFileDataUrl }, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error updating ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500 });
