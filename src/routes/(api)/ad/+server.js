@@ -27,7 +27,7 @@ export async function GET({ request }) {
 	try {
 		const origin = request.headers.get('Origin') || request.headers.get('Referer');
 
-		query = db.select().from(ads).where(eq(ads.active, true));
+		query = db.select().from(ads).where(eq(ads.active, 1));
 
 		// Exclude ads linking to the domain where the request originates
 		if (origin) {
