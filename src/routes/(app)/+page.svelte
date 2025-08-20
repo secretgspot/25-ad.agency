@@ -164,24 +164,6 @@
 		}}>
 		<input type="hidden" name="id" value={formData.id} />
 
-		{#if selectedAd}
-			<div class="form-actions">
-				<Button
-					type="button"
-					size="small"
-					onclick={() => confirmDelete(selectedAd)}
-					{loading}
-					disabled={loading}
-					red
-					white>
-					{#snippet icon()}
-						<Icon kind="delete" size="21" />
-					{/snippet}
-					Delete
-				</Button>
-			</div>
-		{/if}
-
 		<div class="form-group">
 			<label for="title" class="form-label">Title</label>
 			<input
@@ -285,6 +267,20 @@
 						<Icon kind="cancel" size="21" />
 					{/snippet}
 					Cancel
+				</Button>
+
+				<Button
+					type="button"
+					size="small"
+					onclick={() => confirmDelete(selectedAd)}
+					{loading}
+					disabled={loading}
+					red
+					white>
+					{#snippet icon()}
+						<Icon kind="delete" size="21" />
+					{/snippet}
+					Delete
 				</Button>
 			{/if}
 		</div>
@@ -421,7 +417,7 @@
 		/* Tablets and small laptops (769px - 1024px) */
 		@media (min-width: 769px) {
 			position: sticky;
-			top: 0;
+			top: var(--size-9);
 		}
 
 		.ad-preview {

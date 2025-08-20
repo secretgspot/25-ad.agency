@@ -351,6 +351,7 @@ input[type="file"]::file-selector-button {
 	align-items: center;
 	justify-content: space-between;
 	flex-direction: row-reverse;
+	flex-wrap: wrap;
 	gap: var(--size-3);
 	margin-top: var(--size-8);
 }
