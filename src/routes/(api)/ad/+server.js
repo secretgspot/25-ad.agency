@@ -38,7 +38,7 @@ export async function GET({ request }) {
 			}
 		}
 
-		const activeAds = await activeAdsQuery;
+		const activeAds = await query;
 
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
