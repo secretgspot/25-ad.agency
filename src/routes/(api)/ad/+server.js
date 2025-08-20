@@ -27,29 +27,29 @@ export async function GET({ request }) {
 	try {
 		const origin = request.headers.get('Origin') || request.headers.get('Referer');
 
-		query = db.select().from(ads).where(eq(ads.active, 1));
+		query = db.select().from(ads).where(eq(ads.active, 1)); // Apply active filter first
 
 		// Exclude ads linking to the domain where the request originates
 		if (origin) {
 			try {
 				const hostname = new URL(origin).hostname;
-				query = query.where(notLike(ads.href, `%${hostname}%`));
+				query = query.where(notLike(ads.href, `%${hostname}%`)); // Chain the origin filter
 			} catch (e) {
 				console.error('Invalid Origin/Referer header:', origin, e);
 			}
 		}
 
-				console.log(query.toSQL());
+		console.log(query.toSQL());
 		const activeAds = await query;
 		console.log('Active Ads:', activeAds);
 
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
 		if (!selectedAd) {
-			return json({ message: 'No ad available' }, { status: 404, headers: { 'Access-Control-Allow-Origin': '*' } });
+			return json({ message: 'No ad available' }, { status: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
 		}
 
-		return json(selectedAd, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
+		return json(selectedAd, { status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
 	} catch (err) {
 		console.error('Unexpected error fetching ad:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
