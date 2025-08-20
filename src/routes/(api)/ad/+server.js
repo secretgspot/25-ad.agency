@@ -49,6 +49,6 @@ export async function GET({ request }) {
 		return json(selectedAd, { status: 200 });
 	} catch (err) {
 		console.error('Unexpected error fetching ad:', err);
-		return json({ message: 'An unexpected error occurred' }, { status: 500 });
+		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
 	}
 }
