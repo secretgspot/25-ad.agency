@@ -59,16 +59,16 @@
 
 	<footer>
 		{#if type === 'alert'}
-			<Button type="button" size="block" onclick={handleConfirm}>OKAY</Button>
+			<Button type="button" shadow size="block" onclick={handleConfirm}>OKAY</Button>
 		{:else if type === 'confirm'}
-			<Button onclick={onCancel}>
+			<Button shadow onclick={onCancel}>
 				{#snippet icon()}
 					<Icon kind="cancel" size="18" />
 				{/snippet}
 				Cancel
 			</Button>
 
-			<Button type="button" red onclick={handleConfirm}>
+			<Button type="button" red shadow onclick={handleConfirm}>
 				{#snippet icon()}
 					👍
 				{/snippet}

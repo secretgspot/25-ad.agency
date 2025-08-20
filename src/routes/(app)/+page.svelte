@@ -246,7 +246,7 @@
 		</div>
 
 		<div class="form-actions">
-			<Button type="submit" right outline {loading} disabled={loading}>
+			<Button type="submit" right shadow {loading} disabled={loading}>
 				{#snippet icon()}
 					{#if selectedAd}
 						<Icon kind="update" size="21" />
@@ -260,6 +260,7 @@
 			{#if selectedAd}
 				<Button
 					type="button"
+					shadow
 					onclick={() => clearSelection()}
 					{loading}
 					disabled={loading}>
@@ -275,8 +276,7 @@
 					onclick={() => confirmDelete(selectedAd)}
 					{loading}
 					disabled={loading}
-					red
-					white>
+					red>
 					{#snippet icon()}
 						<Icon kind="delete" size="21" />
 					{/snippet}
