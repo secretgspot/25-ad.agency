@@ -129,6 +129,7 @@
 			flex-direction: column;
 			align-items: initial;
 			color: var(--text-1);
+			height: min-content;
 			&:hover {
 				border-color: var(--surface-4);
 				color: var(--text-1);
