@@ -27,7 +27,7 @@ export async function POST({ params }) {
 			return json({ message: `Ad with id ${id} not found` }, { status: 404 });
 		}
 
-		return json({ message: 'Click counted' }, { status: 200 });
+		return json({ message: 'Click counted' }, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
 	} catch (err) {
 		console.error('Unexpected error processing click:', err);
 		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
