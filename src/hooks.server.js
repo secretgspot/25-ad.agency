@@ -9,7 +9,7 @@ export async function handle({ event, resolve }) {
 		return resolve(event);
 	}
 
-	if (event.url.pathname.startsWith('/login')) {
+	if (event.url.pathname.startsWith('/login') || event.url.pathname.startsWith('/ad')) {
 		return resolve(event);
 	}
 
