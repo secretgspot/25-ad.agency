@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST({ request }) {
 	try {
-		const { title, href, width, height, weight, active, file } = await request.json();
+		const { title, href, width, height, weight, active, file, impressions, clicks } = await request.json();
 
 		const newAd = {
 			id: uuidv4(),
@@ -26,8 +26,8 @@ export async function POST({ request }) {
 			height,
 			weight: weight || 1,
 			active: active !== undefined ? active : true,
-			impressions: 0,
-			clicks: 0,
+			impressions: impressions || 0,
+			clicks: clicks || 0,
 			file: file || '/placeholder/300x100.svg'
 		};
 

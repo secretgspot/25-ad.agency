@@ -22,9 +22,9 @@ export async function GET({ params }) {
 
 export async function PATCH({ params, request }) {
 	const { id } = params;
-	const { title, href, width, height, active, weight, file } = await request.json();
+	const { title, href, width, height, active, weight, file, impressions, clicks } = await request.json();
 
-	const updateData = { title, href, width, height, active, weight, file };
+	const updateData = { title, href, width, height, active, weight, file, impressions, clicks };
 
 	try {
 		const updatedAd = await db.update(ads).set(updateData).where(eq(ads.id, id)).returning().get();

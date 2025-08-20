@@ -25,6 +25,8 @@
 		height: 100,
 		weight: 1,
 		active: true,
+		impressions: 0,
+		clicks: 0,
 	});
 
 	// Watch for selectedAd changes and update form data
@@ -41,6 +43,8 @@
 				height: 100,
 				weight: 1,
 				active: true,
+				impressions: 0,
+				clicks: 0,
 			};
 			resetFileState();
 		}
@@ -57,6 +61,8 @@
 				height: 100,
 				weight: 1,
 				active: true,
+				impressions: 0,
+				clicks: 0,
 			};
 			resetFileState();
 		}
@@ -114,6 +120,8 @@
 			height: formData.height,
 			weight: formData.weight,
 			active: formData.active,
+			impressions: formData.impressions,
+			clicks: formData.clicks,
 			id: selectedAd?.id
 		};
 
@@ -236,6 +244,31 @@
 				id="weight"
 				name="weight"
 				bind:value={formData.weight}
+				required
+				disabled={loading} />
+		</div>
+	</div>
+
+	<div class="form-group-row">
+		<div class="form-group">
+			<label for="impressions" class="form-label">Impressions</label>
+			<input
+				class="form-input"
+				type="number"
+				id="impressions"
+				name="impressions"
+				bind:value={formData.impressions}
+				required
+				disabled={loading} />
+		</div>
+		<div class="form-group">
+			<label for="clicks" class="form-label">Clicks</label>
+			<input
+				class="form-input"
+				type="number"
+				id="clicks"
+				name="clicks"
+				bind:value={formData.clicks}
 				required
 				disabled={loading} />
 		</div>
