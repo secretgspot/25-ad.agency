@@ -50,6 +50,6 @@ export async function GET({ request }) {
 		return json(selectedAd, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
 	} catch (err) {
 		console.error('Unexpected error fetching ad:', err);
-		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
+		return json({ message: 'An unexpected error occurred' }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
 	}
 }
