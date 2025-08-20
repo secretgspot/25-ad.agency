@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { ads } from '$lib/server/db/schema';
-import { eq, notLike } from 'drizzle-orm';
+import { eq, notLike, and } from 'drizzle-orm'; // Import 'and'
 
 /**
  * Selects a random ad based on weights from a list of ads.
@@ -23,21 +23,22 @@ function selectWeightedRandomAd(adList) {
 }
 
 export async function GET({ request }) {
-	let query; // Declare query outside try block
 	try {
 		const origin = request.headers.get('Origin') || request.headers.get('Referer');
 
-		query = db.select().from(ads).where(eq(ads.active, 1)); // Apply active filter first
+		const whereConditions = [eq(ads.active, 1)]; // Start with active filter
 
 		// Exclude ads linking to the domain where the request originates
 		if (origin) {
 			try {
 				const hostname = new URL(origin).hostname;
-				query = query.where(notLike(ads.href, `%${hostname}%`)); // Chain the origin filter
+				whereConditions.push(notLike(ads.href, `%${hostname}%`));
 			} catch (e) {
 				console.error('Invalid Origin/Referer header:', origin, e);
 			}
 		}
+
+		const query = db.select().from(ads).where(and(...whereConditions)); // Apply all conditions
 
 		console.log(query.toSQL());
 		const activeAds = await query;
