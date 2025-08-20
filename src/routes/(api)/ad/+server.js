@@ -23,22 +23,23 @@ function selectWeightedRandomAd(adList) {
 }
 
 export async function GET({ request }) {
+	let query; // Declare query outside try block
 	try {
 		const origin = request.headers.get('Origin') || request.headers.get('Referer');
 
-		let activeAdsQuery = db.select().from(ads).where(eq(ads.active, true));
+		query = db.select().from(ads).where(eq(ads.active, true));
 
 		// Exclude ads linking to the domain where the request originates
 		if (origin) {
 			try {
 				const hostname = new URL(origin).hostname;
-				activeAdsQuery = activeAdsQuery.where(notLike(ads.href, `%${hostname}%`));
+				query = query.where(notLike(ads.href, `%${hostname}%`));
 			} catch (e) {
 				console.error('Invalid Origin/Referer header:', origin, e);
 			}
 		}
 
-		const activeAds = await query;
+				const activeAds = await query;
 
 		const selectedAd = selectWeightedRandomAd(activeAds);
 
