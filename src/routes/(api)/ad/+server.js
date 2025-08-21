@@ -31,8 +31,19 @@ export async function GET({ request }) {
 		// Exclude ads linking to the domain where the request originates
 		if (origin) {
 			try {
-				const hostname = new URL(origin).hostname;
-				whereConditions.push(notLike(ads.href, `%${hostname}%`));
+				const getDomainFromUrl = (url) => {
+					try {
+						const hostname = new URL(url).hostname;
+						return hostname.startsWith('www.') ? hostname.substring(4) : hostname;
+					} catch (e) {
+						return null;
+					}
+				};
+
+				const originDomain = getDomainFromUrl(origin);
+				if (originDomain) {
+					whereConditions.push(notLike(ads.href, `%${originDomain}%`));
+				}
 			} catch (e) {
 				console.error('Invalid Origin/Referer header:', origin, e);
 			}
